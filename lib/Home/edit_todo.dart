@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:quickalert/models/quickalert_animtype.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -40,88 +41,108 @@ class _EditToDoState extends State<EditToDo> {
 
   @override
   Widget build(BuildContext context) {
-    return OnUnFocusTap(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Edit Todo',
-            style: Style.textStyleSemiRegular(
-                size: 20, textColor: Style.whiteColor),
-          ),
-          backgroundColor: Color(0xff24A19C),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: TextFormField(
-                autofocus: true,
-                controller: note,
-                onChanged: (value) {
-                  if (value.isEmpty || oldNote == value) {
-                    isEmpty = true;
-                  } else {
-                    isEmpty = false;
-                  }
-                  setState(() {});
-                },
-                maxLines: 2,
-                decoration: InputDecoration(
-                    label: Text('Write your notes'),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(35)),
-                        borderSide: BorderSide(color: Style.primaryColor)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(35)),
-                        borderSide: BorderSide(color: Style.primaryColor))),
-              ),
+    return WillPopScope(
+      onWillPop: () {
+        PanaraInfoDialog.show(
+          context,
+          imagePath: 'assets/image/save.png',
+          title: "You didn\'t save note (Siz malumotni saqlamdingiz)",
+          message: "othervise you will lose your data",
+
+          panaraDialogType: PanaraDialogType.success,
+
+          barrierDismissible: false, buttonText: 'Back',
+          onTapDismiss: () {
+            Navigator.pop(context);
+          }, // optional parameter (default is true)
+        );
+
+        return Future.value(false);
+      },
+      child: OnUnFocusTap(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'Edit Todo',
+              style: Style.textStyleSemiRegular(
+                  size: 20, textColor: Style.whiteColor),
             ),
-            150.verticalSpace,
-            GestureDetector(
-              onTap: () {
-                if (!isEmpty) {
-                  LocalStore.editTodo(
-                      ToDoModel(
-                          title: note.text, isDone: widget.todomodel.isDone),
-                      widget.index);
-                 
-                  QuickAlert.show(
-                    // autoCloseDuration: Duration(seconds: 2),
-                    animType: QuickAlertAnimType.slideInUp,
-                    confirmBtnColor: const Color(0xff24A19C),
-                    context: context,
-                    type: QuickAlertType.success,
-                    text: 'Todo edited Successfully!',
-                    onConfirmBtnTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: ((context) => HomePage())),
-                          (route) => false);
-                    },
-                  );
-                }
-              },
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 400),
-                margin: EdgeInsets.symmetric(horizontal: 24),
-                height: 60.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    gradient: isEmpty
-                        ? Style.primaryDisabledGradient
-                        : Style.linearGradient,
-                    borderRadius: BorderRadius.all(Radius.circular(100))),
-                child: Center(
-                  child: Text(
-                    'Edit',
-                    style:
-                        Style.textStyleSemiRegular(textColor: Style.whiteColor),
-                  ),
+            backgroundColor: Color(0xff24A19C),
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: TextFormField(
+                  autofocus: true,
+                  controller: note,
+                  onChanged: (value) {
+                    if (value.isEmpty || oldNote == value) {
+                      isEmpty = true;
+                    } else {
+                      isEmpty = false;
+                    }
+                    setState(() {});
+                  },
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                      label: Text('Write your notes'),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(35)),
+                          borderSide: BorderSide(color: Style.primaryColor)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(35)),
+                          borderSide: BorderSide(color: Style.primaryColor))),
                 ),
               ),
-            )
-          ],
+              150.verticalSpace,
+              GestureDetector(
+                onTap: () {
+                  if (!isEmpty) {
+                    LocalStore.editTodo(
+                        ToDoModel(
+                            title: note.text, isDone: widget.todomodel.isDone),
+                        widget.index);
+
+                    QuickAlert.show(
+                      // autoCloseDuration: Duration(seconds: 2),
+                      animType: QuickAlertAnimType.slideInUp,
+                      confirmBtnColor: const Color(0xff24A19C),
+                      context: context,
+                      type: QuickAlertType.success,
+                      text: 'Todo edited Successfully!',
+                      onConfirmBtnTap: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => HomePage())),
+                            (route) => false);
+                      },
+                    );
+                  }
+                },
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 400),
+                  margin: EdgeInsets.symmetric(horizontal: 24),
+                  height: 60.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      gradient: isEmpty
+                          ? Style.primaryDisabledGradient
+                          : Style.linearGradient,
+                      borderRadius: BorderRadius.all(Radius.circular(100))),
+                  child: Center(
+                    child: Text(
+                      'Edit',
+                      style: Style.textStyleSemiRegular(
+                          textColor: Style.whiteColor),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
