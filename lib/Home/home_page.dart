@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,7 +32,14 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getInfo() async {
-    listOfTodo = await LocalStore.getListTodo();
+    List<ToDoModel> newList = await LocalStore.getListTodo();
+    newList.forEach((element) {
+      if (element.isDone) {
+        listOfDone.add(element);
+      } else {
+        listOfTodo.add(element);
+      }
+    });
 
     setState(() {});
   }
@@ -86,105 +95,119 @@ class _HomePageState extends State<HomePage>
                       value: listOfTodo[index].isDone,
                       onChanged: ((value) {
                         listOfTodo[index].isDone = !listOfTodo[index].isDone;
+                        listOfDone.add(listOfTodo[index]);
                         LocalStore.editTodo(listOfTodo[index], index);
+                        listOfTodo.removeAt(index);
                         setState(() {});
                       }),
                     ),
-                    GestureDetector(
-                      onLongPress: () {
-                        // ! tugatish kerre!!!!!!!!!!1
-                        Platform.isIOS
-                            ? showCupertinoDialog(
-                                context: context,
-                                builder: ((context) => CupertinoAlertDialog(
-                                      title: Text('Please choose (Tanlang)'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: (() {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: ((context) =>
-                                                          EditToDo(
-                                                            todomodel:
-                                                                listOfTodo[
-                                                                    index],
-                                                            index: index,
-                                                          ))));
-                                            }),
-                                            child:
-                                                Text('Edit (o\'zgartirish)')),
-                                        TextButton(
-                                            onPressed: (() {
-                                              LocalStore.removeToDo(index);
-                                              listOfTodo.removeAt(index);
-                                              Navigator.pop(context);
-                                              setState(() {});
-                                            }),
-                                            child: Text('Delete (o\'chirish)')),
-                                        TextButton(
-                                            onPressed: (() {
-                                              Navigator.pop(context);
-                                            }),
-                                            child:
-                                                Text('Cancel (bekor kilish)')),
-                                      ],
-                                    )))
-                            : showDialog(
-                                context: context,
-                                builder: ((context) => Dialog()));
-                      },
-                      child: Text(
-                        listOfTodo[index].title,
-                        style: Style.textStyleNormal(
-                            isDone: listOfTodo[index].isDone),
-                      ),
-                    )
+                    Text(
+                      listOfTodo[index].title,
+                      style: Style.textStyleNormal(
+                          isDone: listOfTodo[index].isDone),
+                    ),
+                    Spacer(),
+                    IconButton(
+                        onPressed: (() {
+                        
+                          Platform.isIOS
+                              ? showCupertinoDialog(
+                                  context: context,
+                                  builder: ((context) => CupertinoAlertDialog(
+                                        title: Text('Please choose (Tanlang)'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: (() {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: ((context) =>
+                                                            EditToDo(
+                                                              todomodel:
+                                                                  listOfTodo[
+                                                                      index],
+                                                              index: index,
+                                                            ))));
+                                              }),
+                                              child:
+                                                  Text('Edit (o\'zgartirish)')),
+                                          TextButton(
+                                              onPressed: (() {
+                                                LocalStore.removeToDo(index);
+                                                listOfTodo.removeAt(index);
+                                                Navigator.pop(context);
+                                                setState(() {});
+                                              }),
+                                              child:
+                                                  Text('Delete (o\'chirish)')),
+                                          TextButton(
+                                              onPressed: (() {
+                                                Navigator.pop(context);
+                                              }),
+                                              child: Text(
+                                                  'Cancel (bekor kilish)')),
+                                        ],
+                                      )))
+                              : showDialog(
+                                  context: context,
+                                  builder: ((context) => AlertDialog(
+                                        title: Text('Please choose (Tanlang)'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: (() {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: ((context) =>
+                                                            EditToDo(
+                                                              todomodel:
+                                                                  listOfTodo[
+                                                                      index],
+                                                              index: index,
+                                                            ))));
+                                              }),
+                                              child:
+                                                  Text('Edit (o\'zgartirish)')),
+                                          TextButton(
+                                              onPressed: (() {
+                                                LocalStore.removeToDo(index);
+                                                listOfTodo.removeAt(index);
+                                                Navigator.pop(context);
+                                                setState(() {});
+                                              }),
+                                              child:
+                                                  Text('Delete (o\'chirish)')),
+                                          TextButton(
+                                              onPressed: (() {
+                                                Navigator.pop(context);
+                                              }),
+                                              child: Text(
+                                                  'Cancel (bekor kilish)')),
+                                        ],
+                                      )));
+                        }),
+                        icon: Icon(Icons.more_vert))
                   ],
                 )),
           ),
           ListView.builder(
-            itemCount: listOfTodo.length,
+            itemCount: listOfDone.length,
             itemBuilder: ((context, index) => Row(
                   children: [
                     Checkbox(
                       activeColor: Color(0xff24A19C),
-                      value: listOfTodo[index].isDone,
+                      value: listOfDone[index].isDone,
                       onChanged: ((value) {
-                        listOfTodo[index].isDone = !listOfTodo[index].isDone;
+                        listOfDone[index].isDone = !listOfDone[index].isDone;
+                        listOfTodo.add(listOfDone[index]);
                         LocalStore.editTodo(listOfTodo[index], index);
+                        listOfDone.removeAt(index);
+
                         setState(() {});
                       }),
                     ),
-                    GestureDetector(
-                      onLongPress: () {
-                        // ! tugatish kerre!!!!!!!!!!1
-                        Platform.isIOS
-                            ? showCupertinoDialog(
-                                context: context,
-                                builder: ((context) => CupertinoAlertDialog(
-                                      title: Text('Please choose'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: (() {}),
-                                            child:
-                                                Text('Edit (o\'zgartirish)')),
-                                        TextButton(
-                                            onPressed: (() {
-                                              Navigator.pop(context);
-                                            }),
-                                            child:
-                                                Text('Cancel (bekor kilish)')),
-                                      ],
-                                    )))
-                            : showDialog(
-                                context: context,
-                                builder: ((context) => Dialog()));
-                      },
-                      child: Text(
-                        listOfTodo[index].title,
-                        style: Style.textStyleNormal(
-                            isDone: listOfTodo[index].isDone),
-                      ),
+                    Text(
+                      listOfDone[index].title,
+                      style: Style.textStyleNormal(
+                          isDone: listOfDone[index].isDone),
                     )
                   ],
                 )),
