@@ -13,7 +13,7 @@ abstract class LocalStore {
     store.setStringList('todo', list);
   }
 
-  static setChangeStatus(ToDoModel todo, int index) async {
+  static editTodo(ToDoModel todo, int index) async {
     SharedPreferences store = await SharedPreferences.getInstance();
     List<String> list = store.getStringList('todo') ?? [];
     List<ToDoModel> listOfTodo = [];
@@ -38,5 +38,12 @@ abstract class LocalStore {
       listOfTodo.add(ToDoModel.fromJson(jsonDecode(element)));
     });
     return listOfTodo;
+  }
+
+  static removeToDo(int index) async {
+    SharedPreferences store = await SharedPreferences.getInstance();
+    List<String> list = store.getStringList('todo') ?? [];
+    list.removeAt(index);
+    store.setStringList('todo', list);
   }
 }

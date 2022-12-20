@@ -3,26 +3,32 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:quickalert/models/quickalert_animtype.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
-import 'package:todo_app/Home/home_page.dart';
 import 'package:todo_app/Store/local.dart';
 import 'package:todo_app/Style/style.dart';
 import 'package:todo_app/components/keybord_dis.dart';
 import 'package:todo_app/model/todo_model.dart';
 
-class ToDoPage extends StatefulWidget {
-  const ToDoPage({super.key});
+import 'home_page.dart';
+
+class EditToDo extends StatefulWidget {
+  final ToDoModel todomodel;
+  final int index;
+  const EditToDo({super.key, required this.todomodel, required this.index});
 
   @override
-  State<ToDoPage> createState() => _ToDoPageState();
+  State<EditToDo> createState() => _EditToDoState();
 }
 
-class _ToDoPageState extends State<ToDoPage> {
+class _EditToDoState extends State<EditToDo> {
   TextEditingController note = TextEditingController();
-
   bool isEmpty = true;
+  String oldNote = '';
 
   @override
   void initState() {
+    note.text = widget.todomodel.title;
+    oldNote = widget.todomodel.title;
+
     super.initState();
   }
 
@@ -38,7 +44,7 @@ class _ToDoPageState extends State<ToDoPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Add Todo',
+            'Edit Todo',
             style: Style.textStyleSemiRegular(
                 size: 20, textColor: Style.whiteColor),
           ),
@@ -50,9 +56,10 @@ class _ToDoPageState extends State<ToDoPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: TextFormField(
+                autofocus: true,
                 controller: note,
                 onChanged: (value) {
-                  if (value.isEmpty) {
+                  if (value.isEmpty || oldNote == value) {
                     isEmpty = true;
                   } else {
                     isEmpty = false;
@@ -73,15 +80,19 @@ class _ToDoPageState extends State<ToDoPage> {
             150.verticalSpace,
             GestureDetector(
               onTap: () {
-                if (note.text.isNotEmpty) {
-                  LocalStore.setTodo(ToDoModel(title: note.text));
+                if (!isEmpty) {
+                  LocalStore.editTodo(
+                      ToDoModel(
+                          title: note.text, isDone: widget.todomodel.isDone),
+                      widget.index);
+                 
                   QuickAlert.show(
                     // autoCloseDuration: Duration(seconds: 2),
                     animType: QuickAlertAnimType.slideInUp,
                     confirmBtnColor: const Color(0xff24A19C),
                     context: context,
                     type: QuickAlertType.success,
-                    text: 'Todo added Successfully!',
+                    text: 'Todo edited Successfully!',
                     onConfirmBtnTap: () {
                       Navigator.pushAndRemoveUntil(
                           context,
@@ -103,7 +114,7 @@ class _ToDoPageState extends State<ToDoPage> {
                     borderRadius: BorderRadius.all(Radius.circular(100))),
                 child: Center(
                   child: Text(
-                    'Add',
+                    'Edit',
                     style:
                         Style.textStyleSemiRegular(textColor: Style.whiteColor),
                   ),
