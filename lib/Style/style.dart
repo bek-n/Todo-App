@@ -27,6 +27,8 @@ class Style {
         Color(0x1524A19C),
       ]);
 
+  static const darkModeColor = Colors.black;
+
   static textStyleSemiBold({double size = 18, Color textColor = blackColor}) =>
       TextStyle(
         fontSize: size,

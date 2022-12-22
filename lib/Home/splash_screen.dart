@@ -19,8 +19,9 @@ class _SplashScreenState extends State<SplashScreen> {
     isLoading = true;
     Future.delayed(Duration(seconds: 4), () {
       isLoading = false;
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: ((context) => HomePage())));
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: ((context) => HomePage())),
+          (route) => false);
     });
     super.initState();
   }
@@ -41,14 +42,12 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Text(
               'Todo App',
-              style: Style.textStyleSemiBold(
-                size: 26,
-              ),
+              style: Theme.of(context).textTheme.headline1,
             ),
             12.verticalSpace,
             Text(
               'The best to do list application for you',
-              style: Style.textStyleSemiRegular(size: 13),
+              style: Theme.of(context).textTheme.headline2,
             ),
             50.verticalSpace,
             isLoading

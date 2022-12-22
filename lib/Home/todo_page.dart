@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:quickalert/models/quickalert_animtype.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -18,6 +20,7 @@ class ToDoPage extends StatefulWidget {
 
 class _ToDoPageState extends State<ToDoPage> {
   TextEditingController note = TextEditingController();
+  TextEditingController dateOfBirth = TextEditingController();
 
   bool isEmpty = true;
 
@@ -50,6 +53,7 @@ class _ToDoPageState extends State<ToDoPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: TextFormField(
+                style: Theme.of(context).textTheme.headline2,
                 controller: note,
                 onChanged: (value) {
                   if (value.isEmpty) {
@@ -59,15 +63,57 @@ class _ToDoPageState extends State<ToDoPage> {
                   }
                   setState(() {});
                 },
-                maxLines: 2,
                 decoration: InputDecoration(
                     label: Text('Write your notes'),
+                    labelStyle: Theme.of(context).textTheme.headline2,
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(35)),
                         borderSide: BorderSide(color: Style.primaryColor)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(35)),
                         borderSide: BorderSide(color: Style.primaryColor))),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
+              child: TextFormField(
+                readOnly: true,
+                style: Theme.of(context).textTheme.headline2,
+                onChanged: (value) {
+                  setState(() {});
+                },
+                controller: dateOfBirth,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: (() {
+                      showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1970),
+                              lastDate: DateTime.now())
+                          .then((value) {
+                        dateOfBirth.text = DateFormat('MMMM dd, yyyy')
+                            .format(value ?? DateTime.now());
+                        setState(() {});
+                      });
+                    }),
+                    icon: SvgPicture.asset(
+                      'assets/svg/calendar.svg',
+                      height: 24,
+                      width: 24,
+                      color: Style.primaryColor,
+                    ),
+                  ),
+                  label: Text('Choose the date'),
+                  labelStyle: Theme.of(context).textTheme.headline2,
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(35)),
+                      borderSide: BorderSide(color: Style.primaryColor)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(35)),
+                      borderSide: BorderSide(color: Style.primaryColor)),
+                ),
               ),
             ),
             150.verticalSpace,

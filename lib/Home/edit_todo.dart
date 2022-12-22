@@ -75,6 +75,7 @@ class _EditToDoState extends State<EditToDo> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: TextFormField(
+                  style: Theme.of(context).textTheme.headline2,
                   autofocus: true,
                   controller: note,
                   onChanged: (value) {
@@ -85,9 +86,9 @@ class _EditToDoState extends State<EditToDo> {
                     }
                     setState(() {});
                   },
-                  maxLines: 2,
                   decoration: InputDecoration(
                       label: Text('Write your notes'),
+                      labelStyle: Theme.of(context).textTheme.headline2,
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(35)),
                           borderSide: BorderSide(color: Style.primaryColor)),
